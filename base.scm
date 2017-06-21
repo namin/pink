@@ -156,8 +156,8 @@
       ;; cons is an introductoin form, so needs explicit lifting
       (((tagged? 'cons) e) (cons (evalms env (cadr e)) (evalms env (caddr e))))
       (else ;; assume application
-       (let ((v1 (evalms env (cadr e)))
-             (v2 (evalms env (caddr e))))
+       (let ((v1 (evalms env (car e)))
+             (v2 (evalms env (cadr e))))
          (if (and (code? v1) (code? v2))
              `(code ,(reflect `(,(force-code v1) ,(force-code v2))))
              (if ((tagged? 'clo) v1)
