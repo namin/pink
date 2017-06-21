@@ -153,7 +153,7 @@
       (((tagged? 'symbol?) e) (pred-op symbol?) env e)
       (((tagged? 'pair?) e) (pred-op pair?) env e)
       (((tagged? 'code?) e) (pred-op code?) env e)
-      ;; cons is an introductoin form, so needs explicit lifting
+      ;; cons is an introduction form, so needs explicit lifting
       (((tagged? 'cons) e) (cons (evalms env (cadr e)) (evalms env (caddr e))))
       (else ;; assume application
        (let ((v1 (evalms env (car e)))
