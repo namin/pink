@@ -52,7 +52,7 @@
   ((((eval l) (car exp)) env) (((eval l) (cadr exp)) env)))))))))
 )
 
-(define pink-fac '((lambda f n (if n (* n (f (- n 1))) 1)) 4))
+(define pink-fac '(lambda f n (if n (* n (f (- n 1))) 1)))
 
 (define pink-tie-src
   `(lambda eval l (lambda _ e (((,pink-poly-src eval) l) e))))

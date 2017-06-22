@@ -130,13 +130,15 @@
             (reflectc (list (car e) (force-code v1)))
             (fun v1))))))
 
+(define b2n (lambda (r) (if r 1 0)))
+
 (define pred-op
   (lambda (fun)
     (lambda (env e)
       (let ((v1 (evalms env (cadr e))))
         (if (code? v1)
             (reflectc (list (car e) (force-code v1)))
-            (if (fun v1) 1 0))))))
+            (b2n (fun v1)))))))
 
 (define evalms
   (lambda (env e)
@@ -164,17 +166,17 @@
                             ,(reifyc (lambda () (evalms env (cadddr e))))))
              (if (number? vc)
                  (if (not (= vc 0)) (evalms env (caddr e)) (evalms env (cadddr e)))
-                 (error 'evalms "if expects number for condition")))))
+                 (error 'evalms (format "if expects number for condition, not ~a in ~a" vc e))))))
       (((tagged? '+) e) ((binary-op +) env e))
       (((tagged? '-) e) ((binary-op -) env e))
       (((tagged? '*) e) ((binary-op *) env e))
-      (((tagged? 'eq?) e) ((binary-op eq?) env e))
-      (((tagged? 'car) e) (unary-op car) env e)
-      (((tagged? 'cdr) e) (unary-op cdr) env e)
-      (((tagged? 'number?) e) (pred-op number?) env e)
-      (((tagged? 'symbol?) e) (pred-op symbol?) env e)
-      (((tagged? 'pair?) e) (pred-op pair?) env e)
-      (((tagged? 'code?) e) (pred-op code?) env e)
+      (((tagged? 'eq?) e) ((binary-op (lambda (x y) (b2n (eq? x y)))) env e))
+      (((tagged? 'car) e) ((unary-op car) env e))
+      (((tagged? 'cdr) e) ((unary-op cdr) env e))
+      (((tagged? 'number?) e) ((pred-op number?) env e))
+      (((tagged? 'symbol?) e) ((pred-op symbol?) env e))
+      (((tagged? 'pair?) e) ((pred-op pair?) env e))
+      (((tagged? 'code?) e) ((pred-op code?) env e))
       ;; cons is an introduction form, so needs explicit lifting
       (((tagged? 'cons) e) (cons (evalms env (cadr e)) (evalms env (caddr e))))
       (else ;; assume application
@@ -184,4 +186,4 @@
              `(code ,(reflect `(,(force-code v1) ,(force-code v2))))
              (if ((tagged? 'clo) v1)
                  (evalms (append (cadr v1) (list v1 v2)) (caddr v1))
-                 (error 'evalms "app expects closure"))))))))
+                 (error 'evalms (format "app expects closure, not ~a in ~a" v1 e)))))))))
