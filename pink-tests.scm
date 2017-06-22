@@ -22,3 +22,10 @@
     (run (lambda () (evalms '() `(,c 4)))))
   24
 )
+
+(test "pink-self-compilation"
+  (let ((c (reifyc (lambda () (evalms (list pink-eval-src) `((,pink-evalc-exp1 (var 0)) nil-env))))))
+    (run (lambda () (let ((v (evalms '() c)))
+                 (evalms (list pink-fac v) '((((var 1) (var 0)) nil-env) 4))))))
+  24
+)

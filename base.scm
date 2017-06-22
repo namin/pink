@@ -98,7 +98,7 @@
                         (force-code (evalms
                                      (append env2 `((code ,(fresh)) (code ,(fresh))))
                                      e2))))))))))
-      ((code? v) (reflect (lift (force-code v))))
+      ((code? v) (reflect `(lift ,(force-code v))))
       ((pair? v)
        (let ((a (force-code (car v)))
              (b (force-code (cdr v))))
