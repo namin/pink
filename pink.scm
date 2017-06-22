@@ -8,6 +8,18 @@
               (iter new-r (+ i 1) (cdr env))))))
     (iter -1 0 env)))
 
+(define sug
+  (lambda (e)
+    (if (pair? e)
+      (if (member (car e) '(cadr caddr cadddr))
+          (let ((a (sug (cadr e))))
+            (cond
+              ((eq? (car e) 'cadr)   `(car (cdr ,a)))
+              ((eq? (car e) 'caddr)  `(car (cdr (cdr ,a))))
+              ((eq? (car e) 'cadddr) `(car (cdr (cdr (cdr ,a)))))))
+          (map sug e))
+      e)))
+
 (define trans
   (lambda (e env)
     (cond
@@ -16,12 +28,6 @@
       (((tagged? 'quote) e) (cadr e))
       (((tagged? 'lambda) e) `(lambda ,(trans (cadddr e) (append env (list (cadr e) (caddr e))))))
       (((tagged? 'let) e) `(let ,(trans (caddr e) env) ,(trans (cadddr e) (append env (list (cadr e))))))
-      ((and (pair? e) (member (car e) '(cadr caddr cadddr)))
-       (let ((a (trans (cadr e) env)))
-         (cond
-           ((eq? (car e) 'cadr)   `(car (cdr ,a)))
-           ((eq? (car e) 'caddr)  `(car (cdr (cdr ,a))))
-           ((eq? (car e) 'cadddr) `(car (cdr (cdr (cdr ,a))))))))
       ((and (pair? e) (member (car e) '(if + - * eq? number? symbol? pair? code? cons car cdr run lift)))
        (cons (car e) (map (lambda (x) (trans x env)) (cdr e))))
       (else (map (lambda (x) (trans x env)) e)))))
@@ -55,7 +61,7 @@
 (define pink-fac '(lambda f n (if n (* n (f (- n 1))) 1)))
 
 (define pink-tie-src
-  `(lambda eval l (lambda _ e (((,pink-poly-src eval) l) e))))
+  (sug `(lambda eval l (lambda _ e (((,pink-poly-src eval) l) e)))))
 
 (define pink-eval-src
   `(,pink-tie-src (cons (lambda _ e e) 0)))
