@@ -187,3 +187,12 @@
              (if ((tagged? 'clo) v1)
                  (evalms (append (cadr v1) (list v1 v2)) (caddr v1))
                  (error 'evalms (format "app expects closure, not ~a in ~a" v1 e)))))))))
+
+(define base-fac-anf
+'(let (lambda
+   (let (if (var 1)
+            (let (- (var 1) 1)
+            (let ((var 0) (var 2)) (let (* (var 1) (var 3)) (var 4))))
+            1)
+     (var 2)))
+     (var 0)))
