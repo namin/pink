@@ -17,6 +17,22 @@
   base-fac-anf
 )
 
+(test "pink-eval-evalc-fac"
+  (reifyc (lambda () (evalms (list pink-fac pink-evalc-src) `((((,pink-eval-exp2 (var 1)) nil-env) (var 0)) nil-env))))
+  base-fac-anf
+)
+
+(test "pink-eval-eval-evalc-fac"
+  (reifyc (lambda () (evalms (list pink-fac pink-evalc-src pink-eval-src) `((((((,pink-eval-exp3 (var 2)) nil-env) (var 1)) nil-env) (var 0)) nil-env))))
+  base-fac-anf
+)
+
+;; slow but true
+;; (test "pink-eval-eval-eval-evalc-fac"
+;;   (reifyc (lambda () (evalms (list pink-fac pink-evalc-src pink-eval-src) `((((((((,pink-eval-exp3 (var 2)) nil-env) (var 2)) nil-env) (var 1)) nil-env) (var 0)) nil-env))))
+;;   base-fac-anf
+;; )
+
 (test "pink-evalc-fac-4"
   (let ((c (reifyc (lambda () (evalms (list pink-fac) `((,pink-evalc-exp1 (var 0)) nil-env))))))
     (run (lambda () (evalms '() `(,c 4)))))
