@@ -4,7 +4,7 @@
 (define force-code
   (lambda (f)
     (if (code? f) (code-exp f)
-        (error 'force-code "expected code"))))
+        (error 'force-code (format "expected code, not ~a" f)))))
 
 (define make-let (lambda (e1 e2) `(let ,e1 ,e2)))
 
@@ -35,13 +35,14 @@
 
 (define reflect
   (lambda (s)
-    (append! stBlock (list s))
+    (set! stBlock (append stBlock (list s)))
     (fresh)))
 
 (define reifyc
   (lambda (thunk)
     (reify (lambda ()
-             (let ((f (thunk))) (force-code f))))))
+             (let ((f (thunk)))
+               (force-code f))))))
 
 (define reflectc
   (lambda (s) `(code ,(reflect s))))
@@ -153,8 +154,8 @@
        (let ((vc (evalms env (cadr e))))
          (if (code? vc)
              (reflectc `(if ,(force-code vc)
-                            (reifyc (lambda () (evalms env (caddr e))))
-                            (reifyc (lambda () (evalms env (cadddr e))))))
+                            ,(reifyc (lambda () (evalms env (caddr e))))
+                            ,(reifyc (lambda () (evalms env (cadddr e))))))
              (if (number? vc)
                  (if (not (= vc 0)) (evalms env (caddr e)) (evalms env (cadddr e)))
                  (error 'evalms "if expects number for condition")))))
