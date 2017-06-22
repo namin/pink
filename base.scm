@@ -11,16 +11,23 @@
 (define stFresh 0)
 (define stBlock '()) ;; List[Exp]
 (define stFun '())   ;; List[(Int,Env,Exp)]
+
+(define reset!
+  (lambda ()
+    (set! stFresh 0)
+    (set! stBlock '())
+    (set! stFun '())))
+
 (define run
   (lambda (thunk)
     (let ((sF stFresh)
           (sB stBlock)
-          (sN stFun)
-          (r (thunk)))
-      (set! stFresh sF)
-      (set! stBlock sB)
-      (set! stFun sN)
-      r)))
+          (sN stFun))
+      (let ((r (thunk)))
+        (set! stFresh sF)
+        (set! stBlock sB)
+        (set! stFun sN)
+        r))))
 
 (define fresh
   (lambda ()
@@ -29,9 +36,10 @@
 
 (define reify
   (lambda (thunk)
-    (set! stBlock '())
-    (let ((last (thunk)))
-      (fold-right make-let last stBlock))))
+    (run (lambda ()
+           (set! stBlock '())
+           (let ((last (thunk)))
+             (fold-right make-let last stBlock))))))
 
 (define reflect
   (lambda (s)
@@ -40,9 +48,7 @@
 
 (define reifyc
   (lambda (thunk)
-    (reify (lambda ()
-             (let ((f (thunk)))
-               (force-code f))))))
+    (reify (lambda () (force-code (thunk))))))
 
 (define reflectc
   (lambda (s) `(code ,(reflect s))))
@@ -85,14 +91,14 @@
          (if n `(var ,n)
              (let ((env2 (cadr v))
                    (e2 (caddr v)))
-               (append! stFun (list stFresh env2 e2))
+               (set! stFun (append stFun (list stFresh env2 e2)))
                (reflect
                 `(lambda ,(reify
                       (lambda ()
                         (force-code (evalms
                                      (append env2 `((code ,(fresh)) (code ,(fresh))))
                                      e2))))))))))
-      ((code? e) (reflect (lift (force-code e))))
+      ((code? v) (reflect (lift (force-code v))))
       ((pair? v)
        (let ((a (force-code (car v)))
              (b (force-code (cdr v))))
