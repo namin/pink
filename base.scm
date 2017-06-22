@@ -1,6 +1,6 @@
 (define tagged? (lambda (t) (lambda (e) (and (pair? e) (eq? (car e) t)))))
 (define code? (tagged? 'code))
-(define code-exp car)
+(define code-exp cadr)
 (define force-code
   (lambda (f)
     (if (code? f) (code-exp f)
@@ -31,7 +31,7 @@
   (lambda (thunk)
     (set! stBlock '())
     (let ((last (thunk)))
-      (foldr make-let last stBlock))))
+      (fold-right make-let last stBlock))))
 
 (define reflect
   (lambda (s)
@@ -55,8 +55,23 @@
                  ;; if we are generating code at all
                  ;; the result must be code
                  (let ((last (force-code res)))
-                   `(code ,(foldr make-let last stBlock)))
+                   `(code ,(fold-right make-let last stBlock)))
                  res))))))
+
+
+(define findFun
+  (lambda (v)
+    (let ((env (cadr v))
+          (e (caddr v)))
+      (define iter
+        (lambda (fs)
+          (if (null? fs)
+              #f
+              (let ((f (car fs)))
+                (if (and (eq? env (cadr f)) (eq? e (caddr f))) ;; equal?
+                    (car f)
+                    (iter (cdr fs)))))))
+      (iter stFun))))
 
 ;; NBE-style reify operator (semantics -> syntax)
 (define lift
@@ -64,10 +79,6 @@
     (cond
       ((number? v) v)
       ((symbol? v) v)
-      ((pair? v)
-       (let ((a (force-code (car v)))
-             (b (force-code (cdr v))))
-         (reflect `(cons ,a ,b))))
       (((tagged? 'clo) v)
        (let ((n (findFun v)))
          (if n `(var ,n)
@@ -80,7 +91,11 @@
                         (force-code (evalms
                                      (append env2 `((code ,(fresh)) (code ,(fresh))))
                                      e2))))))))))
-      ((code? e) (reflect (lift (force-code e)))))))
+      ((code? e) (reflect (lift (force-code e))))
+      ((pair? v)
+       (let ((a (force-code (car v)))
+             (b (force-code (cdr v))))
+         (reflect `(cons ,a ,b)))))))
 
 ;; this is basically nth!
 (define lookup
