@@ -145,6 +145,7 @@
     (cond
       ((number? e) e)
       ((symbol? e) e)
+      ((procedure? e) (e env)) ;; special, e.g. lift-ref
       (((tagged? 'var) e) (lookup env (cadr e)))
       (((tagged? 'lambda) e) `(clo ,env ,(cadr e)))
       (((tagged? 'let) e)
@@ -153,7 +154,7 @@
       (((tagged? 'lift) e)
        `(code ,(lift (evalms env (cadr e)))))
       (((tagged? 'lift-ref) e)
-       `(code ,(evalms env (cadr e))))
+       `(code ,(lambda (ignore) (evalms env (cadr e)))))
       (((tagged? 'run) e)
        (let ((v1 (evalms env (cadr e)))
              (thunk (lambda () (evalms env (caddr e)))))

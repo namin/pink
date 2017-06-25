@@ -38,3 +38,8 @@
   (evalms (list (mk `(let p (,a-and-b empty-state) (cdr (cdr p))))) `((,pink-eval-exp1 (var 0)) nil-env))
   '()
 )
+
+(test "mk-compiled"
+  (let ((p (evalms (list (mk `(clambda _ _ (,a-and-b empty-state)))) `((,pink-eval-exp1 (var 0)) nil-env)))) (evalms (list p) '((var 0) 0)))
+  (let ((p (evalms (list (mk `(lambda  _ _ (,a-and-b empty-state)))) `((,pink-eval-exp1 (var 0)) nil-env)))) (evalms (list p) '((var 0) 0)))
+)
