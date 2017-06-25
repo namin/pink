@@ -2,6 +2,26 @@
 (load "pink.scm")
 (load "test-check.scm")
 
+(test "pink-code-1"
+  (evalms '() (trans `(code? 0 1) '()))
+  0
+)
+
+(test "pink-eval-code-1"
+  (evalms '((code? 0 1)) `((,pink-eval-exp1 (var 0)) nil-env))
+  0
+)
+
+(test "pink-code-lift-2"
+  (evalms '() (trans `(code? 0 (lift 2)) '()))
+  1
+)
+
+(test "pink-eval-code-lift-21"
+  (evalms '((code? 0 (lift 2))) `((,pink-eval-exp1 (var 0)) nil-env))
+  1
+)
+
 (test "pink-fac-4"
   (evalms '() (trans `(,pink-fac 4) '()))
   24

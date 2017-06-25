@@ -1,10 +1,15 @@
 (define tagged? (lambda (t) (lambda (e) (and (pair? e) (eq? (car e) t)))))
+(define s (lambda (e)
+  (cond
+    (((tagged? 'clo) e) `(clo _ ,(caddr e)))
+    ((pair? e) (cons (s (car e)) (s (cdr e))))
+    (else e))))
 (define code? (tagged? 'code))
 (define code-exp cadr)
 (define force-code
   (lambda (f)
     (if (code? f) (code-exp f)
-        (error 'force-code (format "expected code, not ~a" f)))))
+        (error 'force-code (format "expected code, not ~a" (s f))))))
 
 (define make-let (lambda (e1 e2) `(let ,e1 ,e2)))
 
@@ -120,7 +125,7 @@
             (reflectc (list (car e) (force-code v1) (force-code v2)))
             (if (and (not (code? v1)) (not (code? v2)))
                 (fun v1 v2)
-                (error 'binary-op "stage error")))))))
+                (error 'binary-op (format "stage error for ~a" (car e)))))))))
 
 (define unary-op
   (lambda (fun)
@@ -139,6 +144,8 @@
         (if (code? v1)
             (reflectc (list (car e) (force-code v1)))
             (b2n (fun v1)))))))
+
+(define log (lambda (e) (begin (display e) (newline) e)))
 
 (define evalms
   (lambda (env e)
@@ -161,6 +168,12 @@
          (if (code? v1)
              (reflectc `(run ,(force-code v1) ,(reifyc thunk)))
              (reifyv (lambda () (evalms '() (reifyc thunk)))))))
+      (((tagged? 'code?) e)
+       (let ((v1 (evalms env (cadr e)))
+             (v2 (evalms env (caddr e))))
+         (if (code? v1)
+             (reflectc `(code? ,(force-code v1) ,(force-code v2)))
+             (b2n (code? v2)))))
       (((tagged? 'if) e)
        (let ((vc (evalms env (cadr e))))
          (if (code? vc)
@@ -169,18 +182,18 @@
                             ,(reifyc (lambda () (evalms env (cadddr e))))))
              (if (number? vc)
                  (if (not (= vc 0)) (evalms env (caddr e)) (evalms env (cadddr e)))
-                 (error 'evalms (format "if expects number for condition, not ~a in ~a" vc e))))))
+                 (error 'evalms (format "if expects number for condition, not ~a in ~a" (s vc) (s e)))))))
       (((tagged? '+) e) ((binary-op +) env e))
       (((tagged? '-) e) ((binary-op -) env e))
       (((tagged? '*) e) ((binary-op *) env e))
       (((tagged? 'eq?) e) ((binary-op (lambda (x y) (b2n (eq? x y)))) env e))
       (((tagged? 'car) e) ((unary-op car) env e))
       (((tagged? 'cdr) e) ((unary-op cdr) env e))
+      (((tagged? 'log) e) ((unary-op log) env e))
       (((tagged? 'number?) e) ((pred-op number?) env e))
       (((tagged? 'symbol?) e) ((pred-op symbol?) env e))
       (((tagged? 'pair?) e) ((pred-op pair?) env e))
       (((tagged? 'null?) e) ((pred-op null?) env e))
-      (((tagged? 'code?) e) ((pred-op code?) env e))
       ;; cons is an introduction form, so needs explicit lifting
       (((tagged? 'cons) e) (cons (evalms env (cadr e)) (evalms env (caddr e))))
       (else ;; assume application
@@ -190,7 +203,7 @@
              `(code ,(reflect `(,(force-code v1) ,(force-code v2))))
              (if ((tagged? 'clo) v1)
                  (evalms (append (cadr v1) (list v1 v2)) (caddr v1))
-                 (error 'evalms (format "app expects closure, not ~a in ~a" v1 e)))))))))
+                 (error 'evalms (format "app expects closure, not ~a in ~a" (s v1) (s e))))))))))
 
 (define base-fac-anf
 '(let (lambda
