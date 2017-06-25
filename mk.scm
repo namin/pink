@@ -6,7 +6,7 @@
 (let var=? (lambda _ x1 (lambda _ x2 ((= (cdr x1)) (cdr x2))))
 (let walk (lambda walk u (lambda _ s
   (let pr (if (var? u) ((assp (var=? u)) s) '())
-    (if (null? pr) u ((walk (cdr pr) s))))))
+    (if (null? pr) u ((walk (cdr pr)) s)))))
 (let ext-s (lambda _ x (lambda _ v (lambda _ s (cons (cons x v) s))))
 (let mzero '()
 (let unit (lambda _ s/c (cons s/c mzero))
@@ -30,12 +30,12 @@
   (if (null? $1) $2
   (if (pair? $1) (cons (car $1) ((mplus (cdr $1)) $2))
    ;; (procedure? $1)
-   (lambda _ _ ((mplus $2) ($1)))))))
+   (lambda _ _ ((mplus $2) ($1 0)))))))
 (let bind (lambda bind $ (lambda _ g
   (if (null? $) mzero
   (if (pair? $) ((mplus (g (car $))) ((bind (cdr $)) g))
   ;; (procedure? $)
-  (lambda _ _ ((bind ($)) g))))))
+  (lambda _ _ ((bind ($ 0)) g))))))
 (let disj (lambda _ g1 (lambda _ g2 (lambda _ s/c ((mplus (g1 s/c)) (g2 s/c)))))
 (let conj (lambda _ g1 (lambda _ g2 (lambda _ s/c ((bind (g1 s/c)) g2))))
 (let empty-state (cons '() 0)
