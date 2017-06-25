@@ -176,6 +176,7 @@
       (((tagged? 'number?) e) ((pred-op number?) env e))
       (((tagged? 'symbol?) e) ((pred-op symbol?) env e))
       (((tagged? 'pair?) e) ((pred-op pair?) env e))
+      (((tagged? 'null?) e) ((pred-op null?) env e))
       (((tagged? 'code?) e) ((pred-op code?) env e))
       ;; cons is an introduction form, so needs explicit lifting
       (((tagged? 'cons) e) (cons (evalms env (cadr e)) (evalms env (caddr e))))
