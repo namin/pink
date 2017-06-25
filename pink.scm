@@ -48,6 +48,7 @@
     (if (eq?  'let    (car exp))   (let x (((eval l) (caddr exp)) env) (((eval l) (cadddr exp))
       (lambda _ y (if (eq?  y (cadr exp)) x (env y)))))
     (if (eq?  'lift   (car exp))   (lift (((eval l) (cadr exp)) env))
+    (if (eq?  'unlift (car exp))   (((eval (cons (lambda _ e e) 0)) (cadr exp)) env)
     (if (eq?  'lift-ref (car exp)) (lift-ref (((eval l) (cadr exp)) env) (((eval l) (caddr exp)) env))
     (if (eq?  'log (car exp))      (log (((eval l) (cadr exp)) env))
     (if (eq?  'number? (car exp))  (number? (((eval l) (cadr exp)) env))
@@ -60,7 +61,7 @@
     (if (eq?  'cons   (car exp))   ((car l) (cons (((eval l) (cadr exp)) env) (((eval l) (caddr exp)) env)))
     (if (eq?  'quote  (car exp))   ((car l) (cadr exp))
     (if (eq?  'run    (car exp))   (run (((eval l) (cadr exp)) env) (((eval l) (caddr exp)) env))
-    ((env (car exp)) (((eval l) (cadr exp)) env)))))))))))))))))))))))
+    ((env (car exp)) (((eval l) (cadr exp)) env))))))))))))))))))))))))
   ((((eval l) (car exp)) env) (((eval l) (cadr exp)) env)))))))))
 )
 

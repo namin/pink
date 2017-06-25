@@ -65,3 +65,12 @@
                  (evalms (list pink-fac v) '((((var 1) (var 0)) nil-env) 4))))))
   24
 )
+
+(test "pink-unlift-oo"
+(evalms (list `(clambda _ _
+                (let send (unlift (lambda _ o (unlift (lambda _ msg (o msg)))))
+                (let recv (unlift (lambda _ t t))
+               ((send (recv (unlift (lambda _ msg (if (eq? msg 'hi) (lift 'hello) (lift 'error)))))) (unlift 'hi))))))
+        `((,pink-eval-exp1 (var 0)) nil-env))
+'(clo () hello)
+)
