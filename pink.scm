@@ -61,7 +61,11 @@
     (if (eq?  'cons   (car exp))   ((car l) (cons (((eval l) (cadr exp)) env) (((eval l) (caddr exp)) env)))
     (if (eq?  'quote  (car exp))   ((car l) (cadr exp))
     (if (eq?  'run    (car exp))   (run (((eval l) (cadr exp)) env) (((eval l) (caddr exp)) env))
-    ((env (car exp)) (((eval l) (cadr exp)) env))))))))))))))))))))))))
+    (if (eq?  'delta (car exp))
+      (let ev (((eval (cons (lambda _ e e) (cdr l))) (cadr exp)) env) (((ev l) (caddr exp)) env))
+    (if (eq?  'delta-eval  (car exp))
+      (let ev (((eval (cons (lambda _ e e) (cdr l))) (cadr exp)) env) (((((ev tie) eval) l) (caddr exp)) env))
+    ((env (car exp)) (((eval l) (cadr exp)) env))))))))))))))))))))))))))
   ((((eval l) (car exp)) env) (((eval l) (cadr exp)) env)))))))))
 )
 
