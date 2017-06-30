@@ -105,12 +105,12 @@
     `((,pink-eval-exp1 (var 0)) nil-env))))
     (caddr c))
   '(let (log [var 1])
-  (let (if
+   (let (if
         [var 2]
         [let (log (var 1))
-          (let (- [var 3] 1)
-            (let ([var 0] [var 4])
-              (let (log [var 1]) (let (* [var 6] [var 5]) (var 7)))))]
+          (let (log [var 1])
+            (let (- [var 4] 1)
+              (let ([var 0] [var 5]) (let (* [var 3] [var 6]) (var 7)))))]
         1)
     (var 3)))
 )

@@ -119,8 +119,9 @@
 (define binary-op
   (lambda (fun)
     (lambda (env e)
-      (let ((v1 (evalms env (cadr e)))
-            (v2 (evalms env (caddr e))))
+      ;; Use let* to enforce evaluation order.
+      (let* ((v1 (evalms env (cadr e)))
+             (v2 (evalms env (caddr e))))
         (if (and (code? v1) (code? v2))
             (reflectc (list (car e) (force-code v1) (force-code v2)))
             (if (and (not (code? v1)) (not (code? v2)))
