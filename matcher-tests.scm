@@ -57,28 +57,24 @@
   'no
 )
 
-(test "matcher-trace-c-1"
+(define tracing-matcher-transformer
+  (lambda (r)
   (let ((c (reifyc (lambda () (evalms (list
      `(delta-eval (lambda _ tie (lambda _ eval (lambda ev l (lambda _ exp (lambda _ env
      (if (symbol? exp) (let _ (log (lift exp)) (let r (((eval l) exp) env) (if (code? 0 r) (log r) (let _ (log (lift-ref exp r)) r))))
      ((((tie ev) l) exp) env)))))))
      (let maybe-lift (lambda _ e (lift e)) ,matcher-src))
-     `(_ * a _ * done))
+     r)
      `(((,pink-eval-exp2 (var 0)) nil-env) (var 1)))))))
-    (run (lambda () (let ((v (evalms '() c)))
-                 (evalms (list `(b a done) v) `((var 1) (var 0)))))))
+    (run (lambda () (let ((v (evalms '() c))) v))))))
+
+
+(test "matcher-trace-c-1"
+  (evalms (list `(b a done) (tracing-matcher-transformer '(_ * a _ * done))) `((var 1) (var 0)))
   'yes
 )
 
 (test "matcher-trace-c-2"
-  (let ((c (reifyc (lambda () (evalms (list
-     `(delta-eval (lambda _ tie (lambda _ eval (lambda ev l (lambda _ exp (lambda _ env
-     (if (symbol? exp) (let _ (log (lift exp)) (let r (((eval l) exp) env) (if (code? 0 r) (log r) (let _ (log (lift-ref exp r)) r))))
-     ((((tie ev) l) exp) env)))))))
-     (let maybe-lift (lambda _ e (lift e)) ,matcher-src))
-     `(_ * a _ * done))
-     `(((,pink-eval-exp2 (var 0)) nil-env) (var 1)))))))
-    (run (lambda () (let ((v (evalms '() c)))
-                 (evalms (list `(b b done) v) `((var 1) (var 0)))))))
+  (evalms (list `(b b done) (tracing-matcher-transformer '(_ * a _ * done))) `((var 1) (var 0)))
   'no
 )
