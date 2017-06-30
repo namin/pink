@@ -126,7 +126,7 @@
             (reflectc (list (car e) (force-code v1) (force-code v2)))
             (if (and (not (code? v1)) (not (code? v2)))
                 (fun v1 v2)
-                (error 'binary-op (format "stage error for ~a" (car e)))))))))
+                (error 'binary-op (format "stage error in ~a ~a ~a" (car e) (s v1) (s v2)))))))))
 
 (define unary-op
   (lambda (fun)
