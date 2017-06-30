@@ -61,7 +61,7 @@
   (lambda (r)
   (let ((c (reifyc (lambda () (evalms (list
      `(delta-eval (lambda _ tie (lambda _ eval (lambda ev l (lambda _ exp (lambda _ env
-     (if (symbol? exp) (let _ (log (lift 0) (lift exp)) (let r (((eval l) exp) env) (if (code? 0 r) (log (lift 0) r) (let _ (log (lift 0) (lift-ref exp r)) r))))
+     (if (symbol? exp) (let _ (log (lift 0) exp) (let r (((eval l) exp) env) (let _ (log (lift 0) r) r)))
      ((((tie ev) l) exp) env)))))))
      (let maybe-lift (lambda _ e (lift e)) ,matcher-src))
      r)
