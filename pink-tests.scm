@@ -96,6 +96,18 @@
   24
 )
 
+(test "pink-fac-clambda-code"
+  (let ((c (evalms (list
+     '(clambda f n (if n (* n (f (- n 1))) 1)))
+    `((,pink-eval-exp1 (var 0)) nil-env))))
+    (caddr c))
+  '(let (if [var 1]
+      [let (- (var 1) 1)
+        (let ([var 0] [var 2]) (let (* [var 1] [var 3]) (var 4)))]
+      1)
+   (var 2))
+)
+
 (test "pink-trace-fac-clambda-code"
   (let ((c (evalms (list
      '(delta-eval (lambda _ tie (lambda _ eval (lambda ev l (lambda _ exp (lambda _ env
