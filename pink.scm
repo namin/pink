@@ -91,3 +91,9 @@
 
 (define pink-evalc-exp1
   (trans pink-evalc-src '(arg1)))
+
+(define pink-evalc-exp2
+  (trans pink-evalc-src '(arg1 arg2)))
+
+(define pink-evalc-exp3
+  (trans pink-evalc-src '(arg1 arg2 arg3)))

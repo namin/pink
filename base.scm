@@ -80,7 +80,7 @@
           (if (null? fs)
               #f
               (let ((f (car fs)))
-                (if (and (eq? env (cadr f)) (eq? e (caddr f))) ;; equal?
+                (if (and (equal? env (cadr f)) (equal? e (caddr f)))
                     (car f)
                     (iter (cdr fs)))))))
       (iter stFun))))
@@ -146,7 +146,7 @@
             (reflectc (list (car e) (force-code v1)))
             (b2n (fun v1)))))))
 
-(define log (lambda (e) (begin (display e) (newline) e)))
+(define log (lambda (e) (begin (display (s e)) (newline) e)))
 
 (define evalms
   (lambda (env e)
