@@ -1,9 +1,9 @@
 (define matcher-src
- '(let star_loop (lambda star_loop m (lambda _ c (maybe-lift (lambda _ s
+ '(let star_loop (lambda star_loop m (lambda _ c (maybe-lift (lambda inner_loop s
   (if (eq?  (maybe-lift 'yes) (m s)) (maybe-lift 'yes)
   (if (eq?  (maybe-lift 'done) (car s)) (maybe-lift 'no)
-  (if (eq?  '_ c) (((star_loop m) c) (cdr s))
-  (if (eq?  (maybe-lift c) (car s)) (((star_loop m) c) (cdr s)) (maybe-lift 'no)))))))))
+  (if (eq?  '_ c) (inner_loop (cdr s))
+  (if (eq?  (maybe-lift c) (car s)) (inner_loop (cdr s)) (maybe-lift 'no)))))))))
 (let match_here (lambda match_here r (lambda _ s (if (eq?  'done (car r)) (maybe-lift 'yes)
   (let m (lambda _ s
       (if (eq?  '_ (car r)) (if (eq?  (maybe-lift 'done) (car s)) (maybe-lift 'no) ((match_here (cdr r)) (cdr s)))

@@ -96,7 +96,8 @@
          (if n `(var ,n)
              (let ((env2 (cadr v))
                    (e2 (caddr v)))
-               (set! stFun (append stFun (list (list stFresh env2 e2))))
+               ; enable or disable function memoization for testing semantics
+               ;(set! stFun (append stFun (list (list stFresh env2 e2))))
                (reflect
                 `(lambda ,(reify
                       (lambda ()
