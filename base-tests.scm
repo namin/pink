@@ -23,3 +23,14 @@
   (reifyc (lambda () (evalms '() `(lift (lambda (if (var 1) (* (var 1) ((var 0) (- (var 1) (lift 1)))) (lift 1)))))))
   base-fac-anf
 )
+
+(test "log"
+  (run (lambda () (evalms '() '(log 1 1))))
+  1
+)
+
+(test "log-lift"
+  (let ((c (reifyc (lambda () (evalms '() '(log (lift 1) 1))))))
+    (run (lambda () (evalms '() c))))
+  1
+)

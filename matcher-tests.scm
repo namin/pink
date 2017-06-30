@@ -38,7 +38,7 @@
 (test "matcher-trace-1"
   (evalms (list
      `(delta-eval (lambda _ tie (lambda _ eval (lambda ev l (lambda _ exp (lambda _ env
-     (if (symbol? exp) (let _ (log exp) (log (((eval l) exp) env)))
+     (if (symbol? exp) (let _ (log 0 exp) (log 0 (((eval l) exp) env)))
      ((((tie ev) l) exp) env)))))))
      (let maybe-lift (lambda _ e e) ,matcher-src))
      `(_ * a _ * done) `(b a done))
@@ -49,7 +49,7 @@
 (test "matcher-trace-2"
   (evalms (list
      `(delta-eval (lambda _ tie (lambda _ eval (lambda ev l (lambda _ exp (lambda _ env
-     (if (symbol? exp) (let _ (log exp) (log (((eval l) exp) env)))
+     (if (symbol? exp) (let _ (log 0 exp) (log 0 (((eval l) exp) env)))
      ((((tie ev) l) exp) env)))))))
      (let maybe-lift (lambda _ e e) ,matcher-src))
      `(_ * a _ * done) `(b b done))
@@ -61,7 +61,7 @@
   (lambda (r)
   (let ((c (reifyc (lambda () (evalms (list
      `(delta-eval (lambda _ tie (lambda _ eval (lambda ev l (lambda _ exp (lambda _ env
-     (if (symbol? exp) (let _ (log (lift exp)) (let r (((eval l) exp) env) (if (code? 0 r) (log r) (let _ (log (lift-ref exp r)) r))))
+     (if (symbol? exp) (let _ (log (lift 0) (lift exp)) (let r (((eval l) exp) env) (if (code? 0 r) (log (lift 0) r) (let _ (log (lift 0) (lift-ref exp r)) r))))
      ((((tie ev) l) exp) env)))))))
      (let maybe-lift (lambda _ e (lift e)) ,matcher-src))
      r)

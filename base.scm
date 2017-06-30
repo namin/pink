@@ -148,6 +148,9 @@
 
 (define log (lambda (e) (begin (display (s e)) (newline) e)))
 
+(define lift-ref (lambda (e1 e2)
+  `(code (proc ,e1 ,(lambda (ignore) (e2))))))
+
 (define evalms
   (lambda (env e)
     (cond
@@ -162,7 +165,7 @@
       (((tagged? 'lift) e)
        `(code ,(lift (evalms env (cadr e)))))
       (((tagged? 'lift-ref) e)
-       `(code (proc ,(evalms env (cadr e)) ,(lambda (ignore) (evalms env (caddr e))))))
+       (lift-ref (evalms env (cadr e)) (lambda () (evalms env (caddr e)))))
       (((tagged? 'run) e)
        (let ((v1 (evalms env (cadr e)))
              (thunk (lambda () (evalms env (caddr e)))))
@@ -175,6 +178,12 @@
          (if (code? v1)
              (reflectc `(code? ,(force-code v1) ,(force-code v2)))
              (b2n (code? v2)))))
+      (((tagged? 'log) e)
+       (let ((v1 (evalms env (cadr e)))
+             (v2 (evalms env (caddr e))))
+         (if (code? v1)
+             (reflectc `(log ,(force-code v1) ,(force-code (if (code? v2) v2 (lift-ref '_ (lambda () v2))))))
+             (log v2))))
       (((tagged? 'if) e)
        (let ((vc (evalms env (cadr e))))
          (if (code? vc)
@@ -190,7 +199,6 @@
       (((tagged? 'eq?) e) ((binary-op (lambda (x y) (b2n (eq? x y)))) env e))
       (((tagged? 'car) e) ((unary-op car) env e))
       (((tagged? 'cdr) e) ((unary-op cdr) env e))
-      (((tagged? 'log) e) ((unary-op log) env e))
       (((tagged? 'number?) e) ((pred-op number?) env e))
       (((tagged? 'symbol?) e) ((pred-op symbol?) env e))
       (((tagged? 'pair?) e) ((pred-op pair?) env e))

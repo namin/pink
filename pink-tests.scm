@@ -69,7 +69,7 @@
 (test "pink-trace-fac"
   (evalms (list
      '((delta-eval (lambda _ tie (lambda _ eval (lambda ev l (lambda _ exp (lambda _ env
-     (if (if (symbol? exp) (eq? 'n exp) 0) (log (((eval l) exp) env))
+     (if (if (symbol? exp) (eq? 'n exp) 0) (log ((car l) 0) (((eval l) exp) env))
      ((((tie ev) l) exp) env)))))))
      (lambda f n (if n (* n (f (- n 1))) 1))) 4))
     `((,pink-eval-exp1 (var 0)) nil-env))
@@ -79,7 +79,7 @@
 (test "pink-trace-fac-2"
   (evalms (list
      '(delta-eval (lambda _ tie (lambda _ eval (lambda ev l (lambda _ exp (lambda _ env
-     (if (if (symbol? exp) (eq? 'n exp) 0) (log (((eval l) exp) env))
+     (if (if (symbol? exp) (eq? 'n exp) 0) (log ((car l) 0) (((eval l) exp) env))
      ((((tie ev) l) exp) env)))))))
      (lambda f n (if n (* n (f (- n 1))) 1))))
     `(((,pink-eval-exp1 (var 0)) nil-env) 4))
@@ -89,7 +89,7 @@
 (test "pink-trace-fac-clambda"
   (evalms (list
      '(delta-eval (lambda _ tie (lambda _ eval (lambda ev l (lambda _ exp (lambda _ env
-     (if (if (symbol? exp) (eq? 'n exp) 0) (log (((eval l) exp) env))
+     (if (if (symbol? exp) (eq? 'n exp) 0) (log ((car l) 0) (((eval l) exp) env))
      ((((tie ev) l) exp) env)))))))
      (clambda f n (if n (* n (f (- n 1))) 1))))
     `(((,pink-eval-exp1 (var 0)) nil-env) 4))
@@ -111,16 +111,16 @@
 (test "pink-trace-fac-clambda-code"
   (let ((c (evalms (list
      '(delta-eval (lambda _ tie (lambda _ eval (lambda ev l (lambda _ exp (lambda _ env
-     (if (if (symbol? exp) (eq? 'n exp) 0) (log (((eval l) exp) env))
+     (if (if (symbol? exp) (eq? 'n exp) 0) (log ((car l) 0) (((eval l) exp) env))
      ((((tie ev) l) exp) env)))))))
      (clambda f n (if n (* n (f (- n 1))) 1))))
     `((,pink-eval-exp1 (var 0)) nil-env))))
     (caddr c))
-  '(let (log [var 1])
+  '(let (log 0 [var 1])
    (let (if
         [var 2]
-        [let (log (var 1))
-          (let (log [var 1])
+        [let (log 0 (var 1))
+          (let (log 0 [var 1])
             (let (- [var 4] 1)
               (let ([var 0] [var 5]) (let (* [var 3] [var 6]) (var 7)))))]
         1)

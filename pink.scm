@@ -50,7 +50,7 @@
     (if (eq?  'lift   (car exp))   (lift (((eval l) (cadr exp)) env))
     (if (eq?  'unlift (car exp))   (((eval (cons (lambda _ e e) 0)) (cadr exp)) env)
     (if (eq?  'lift-ref (car exp)) (lift-ref (((eval l) (cadr exp)) env) (((eval l) (caddr exp)) env))
-    (if (eq?  'log (car exp))      (log (((eval l) (cadr exp)) env))
+    (if (eq?  'log     (car exp))  (log (((eval l) (cadr exp)) env) (((eval l) (caddr exp)) env))
     (if (eq?  'number? (car exp))  (number? (((eval l) (cadr exp)) env))
     (if (eq?  'symbol? (car exp))  (symbol? (((eval l) (cadr exp)) env))
     (if (eq?  'null?   (car exp))  (null? (((eval l) (cadr exp)) env))
