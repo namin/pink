@@ -1,3 +1,6 @@
+;; from https://github.com/jasonhemann/microKanren/blob/master/microKanren.scm
+;; see also http://webyrd.net/scheme-2013/papers/HemannMuKanren2013.pdf
+
 (define mk (lambda (program)
 `(let = (lambda _ a (lambda _ b (if (- a b) 0 1)))
 (let assp (lambda assp p (lambda _ s (if (pair? s) (if (p (car (car s))) (car s) ((assp p) (cdr s))) s)))
