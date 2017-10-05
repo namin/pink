@@ -101,11 +101,11 @@
      '(clambda f n (if n (* n (f (- n 1))) 1)))
     `((,pink-eval-exp1 (var 0)) nil-env))))
     (caddr c))
-  '(let (if [var 1]
-      [let (- (var 1) 1)
-        (let ([var 0] [var 2]) (let (* [var 1] [var 3]) (var 4)))]
+  '(let (if [var 14]
+      [let (- (var 14) 1)
+        (let ([var 13] [var 15]) (let (* [var 14] [var 16]) (var 17)))]
       1)
-   (var 2))
+   (var 15))
 )
 
 (test "pink-trace-fac-clambda-code"
@@ -116,22 +116,24 @@
      (clambda f n (if n (* n (f (- n 1))) 1))))
     `((,pink-eval-exp1 (var 0)) nil-env))))
     (caddr c))
-  '(let (log 0 [var 1])
+  '(let (log 0 [var 14])
    (let (if
-        [var 2]
-        [let (log 0 (var 1))
-          (let (log 0 [var 1])
-            (let (- [var 4] 1)
-              (let ([var 0] [var 5]) (let (* [var 3] [var 6]) (var 7)))))]
+        [var 15]
+        [let (log 0 (var 14))
+          (let (log 0 [var 14])
+            (let (- [var 17] 1)
+              (let ([var 13] [var 18]) (let (* [var 16] [var 19]) (var 20)))))]
         1)
-    (var 3)))
+    (var 16)))
 )
 
 (test "pink-unlift-oo"
+(let ((c
 (evalms (list `(clambda _ _
                 (let send (unlift (lambda _ o (unlift (lambda _ msg (o msg)))))
                 (let recv (unlift (lambda _ t t))
                ((send (recv (unlift (lambda _ msg (if (eq? msg 'hi) (lift 'hello) (lift 'error)))))) (unlift 'hi))))))
         `((,pink-eval-exp1 (var 0)) nil-env))
-'(clo () hello)
+)) (caddr c))
+'hello
 )

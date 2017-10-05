@@ -171,7 +171,7 @@
              (thunk (lambda () (evalms env (caddr e)))))
          (if (code? v1)
              (reflectc `(run ,(force-code v1) ,(reifyc thunk)))
-             (reifyv (lambda () (evalms '() (reifyc thunk)))))))
+             (reifyv (lambda () (evalms env (reifyc (lambda () (set! stFresh (length env)) (thunk)))))))))
       (((tagged? 'code?) e)
        (let ((v1 (evalms env (cadr e)))
              (v2 (evalms env (caddr e))))
