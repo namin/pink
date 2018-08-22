@@ -10,3 +10,6 @@
 Each code file `.scm` above has a companion `-tests.scm`, which can be run with [Chez Scheme](https://cisco.github.io/ChezScheme/).
 For example, `chez pink-tests.scm` runs all the Pink-related tests.
 
+## See Also
+
+* [Pink in Scala](http://popl18.namin.net)
